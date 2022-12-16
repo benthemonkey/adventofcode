@@ -1,5 +1,5 @@
 import fs from "fs";
-import _, { max } from "lodash";
+import _ from "lodash";
 import chalk from "chalk";
 import kruskal from "kruskal";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n");
@@ -101,18 +101,13 @@ function traverseWeightedGraph(nodes: Record<string, Node>, start: Node) {
   const minutes = 30;
   const nodeList = Object.keys(nodes);
   let maxPressure = 0;
-  let maxQueue: string[] = [];
-  let iter = 0;
 
   while (queue.length) {
-    iter++;
-    if (iter % 100 === 0) console.log(iter, queue.length);
     const { node, time, totalPressure, visited } = queue.shift()!;
 
     if (maxPressure < totalPressure) {
-      console.log("new max pressure", totalPressure);
+      // console.log("new max pressure", totalPressure);
       maxPressure = totalPressure;
-      maxQueue = visited;
     }
 
     if (Object.keys(visited).length === nodeList.length) {
@@ -140,7 +135,6 @@ function traverseWeightedGraph(nodes: Record<string, Node>, start: Node) {
     queue = _.orderBy(queue, ["totalPressure"], ["desc"]);
   }
 
-  console.log(start, nodes, maxQueue);
   return maxPressure;
 }
 
@@ -159,11 +153,8 @@ function traverseWeightedGraph2(nodes: Record<string, Node>, start: Node) {
   const minutes = 26;
   const nodeList = Object.keys(nodes);
   let maxPressure = 0;
-  let maxQueue: Record<string, boolean> = {};
-  let iter = 0;
 
   while (queue.length) {
-    iter++;
     const {
       node,
       elephantNode,
@@ -174,11 +165,9 @@ function traverseWeightedGraph2(nodes: Record<string, Node>, start: Node) {
       elephantIsDone,
     } = queue.shift()!;
 
-    if (iter % 100000 === 0) console.log(iter, queue.length);
     if (maxPressure < totalPressure) {
-      console.log("new max pressure", totalPressure);
+      // console.log("new max pressure", totalPressure);
       maxPressure = totalPressure;
-      maxQueue = visited;
     }
 
     if (Object.keys(visited).length === nodeList.length) {
@@ -250,8 +239,6 @@ function traverseWeightedGraph2(nodes: Record<string, Node>, start: Node) {
           visited:
             addedElephantPressure === 0 ? nextVisited : nextElephantVisited,
           elephantIsDone: addedElephantPressure === 0,
-          // visited: nextElephantVisited,
-          // elephantIsDone: false,
         });
       }
     }
@@ -259,52 +246,8 @@ function traverseWeightedGraph2(nodes: Record<string, Node>, start: Node) {
     queue = _.orderBy(queue, ["totalPressure"], ["desc"]);
   }
 
-  console.log(start, nodes, maxQueue);
   return maxPressure;
 }
-
-// function traverseWeightedGraph(nodes: Record<string, Node>, start: Node) {
-//   const visited: Record<string, boolean> = {};
-//   const queue: State[] = [{ node: start.id, time: 0, totalPressure: 0 }];
-//   const minutes = 30;
-//   const nodeList = Object.keys(nodes);
-
-//   let totalPressure = 0;
-//   let time = 0;
-//   let atNode = start;
-//   for (let i = 0; i < nodeList.length; i++) {
-//     let maxPressure = 0;
-//     let nextNode: Node | null = null;
-//     for (let j = 0; j < nodeList.length; j++) {
-//       if (visited[nodeList[j]]) {
-//         continue;
-//       }
-//       const testNode = nodes[nodeList[j]];
-//       const nextPressure =
-//         testNode.flowRate * Math.max(0, minutes - time - atNode.distances[nodeList[j]] - 1);
-
-//       if (nextPressure > maxPressure) {
-//         nextNode = testNode;
-//         maxPressure = nextPressure;
-//       }
-//     }
-
-//     if (!nextNode) {
-//       console.log(queue);
-//       return totalPressure;
-//     }
-
-//     console.log("moving to ", nextNode.id);
-//     visited[nextNode.id] = true;
-//     time += atNode.distances[nextNode.id] + 1;
-//     totalPressure += maxPressure;
-//     atNode = nextNode;
-//     queue.push({ node: nextNode.id, time, totalPressure });
-//   }
-
-//   console.log(queue);
-//   return totalPressure;
-// }
 
 function partOne(inp) {
   const { nodes, primaryNodes } = parse(inp);
@@ -331,15 +274,15 @@ function partTwo(inp) {
 }
 
 (async function main() {
-  // const test1 = await partOne(sample);
-  // console.log("part 1 sample", test1);
-  // if (test1 !== sampleSol) {
-  //   console.log("Failed the part 1 test");
-  //   process.exit(1);
-  // }
+  const test1 = await partOne(sample);
+  console.log("part 1 sample", test1);
+  if (test1 !== sampleSol) {
+    console.log("Failed the part 1 test");
+    process.exit(1);
+  }
 
-  // const sol1 = await partOne(inp);
-  // console.log("part 1 sol:", sol1);
+  const sol1 = await partOne(inp);
+  console.log("part 1 sol:", sol1);
 
   const test2 = await partTwo(sample);
   console.log("part 2 sample", test2);
