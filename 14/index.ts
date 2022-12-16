@@ -1,9 +1,50 @@
 import fs from "fs";
 import _ from "lodash";
+import chalk from "chalk";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n");
 const sampleSol = 24;
 const sample2Sol = 93;
 const inp = fs.readFileSync(__dirname + "/input.txt", "utf8").split("\n");
+
+type Coord = { x: number; y: number };
+let part2 = false;
+
+const printCave = (walls: string[]) => {
+  let maxY = 0;
+  let minX = Infinity;
+  let maxX = 0;
+  const wallsLookup = {};
+
+  walls.forEach((wall) => {
+    const [x, y] = wall.split(",").map((x) => parseInt(x, 10));
+
+    if (minX > x) minX = x;
+    if (maxX < x) maxX = x;
+    if (maxY < y) maxY = y;
+    wallsLookup[wall] = true;
+  });
+
+  return (occupied: Record<string, boolean>, sand: Coord) => {
+    let out = "\n***************\n\n";
+
+    for (let x = minX; x < maxX; x++) {
+      for (let y = 0; y < maxY; y++) {
+        if (x === sand.x && y === sand.y) {
+          out += chalk.yellow("o");
+        } else if (wallsLookup[`${x},${y}`]) {
+          out += "X";
+        } else if (occupied[`${x},${y}`]) {
+          out += "o";
+        } else {
+          out += ".";
+        }
+      }
+      out += "\n";
+    }
+
+    console.log(out);
+  };
+};
 
 function parse(inp: string[]): { points: string[]; maxY: number } {
   let maxY = 0;
@@ -34,9 +75,6 @@ function parse(inp: string[]): { points: string[]; maxY: number } {
   });
   return { points, maxY };
 }
-
-type Coord = { x: number; y: number };
-let part2 = false;
 
 function coordState(
   occupied: Record<string, boolean>,
@@ -72,14 +110,15 @@ function moveSand(
   }
 }
 
-function sandCount(walls: string[], maxY: number) {
+async function sandCount(walls: string[], maxY: number) {
+  const printer = printCave(walls);
   const occupied = walls.reduce((acc, wall) => {
     acc[wall] = true;
     return acc;
   }, {});
 
   let sandLanded = true;
-  let sandCount = 0;
+  let count = 0;
 
   while (sandLanded) {
     let sand = { x: 500, y: 0 };
@@ -90,7 +129,7 @@ function sandCount(walls: string[], maxY: number) {
       if (newSand === false) {
         occupied[`${sand.x},${sand.y}`] = true;
         sandMoving = false;
-        sandCount++;
+        count++;
         if (sand.x === 500 && sand.y === 0) {
           sandLanded = false;
         }
@@ -100,10 +139,15 @@ function sandCount(walls: string[], maxY: number) {
       } else {
         sand = newSand;
       }
+
+      if (Math.random() < 0.01) {
+        printer(occupied, sand);
+        await new Promise((res) => setTimeout(res, 100));
+      }
     }
   }
 
-  return sandCount;
+  return count;
 }
 
 function partOne(inp) {
@@ -117,19 +161,24 @@ function partTwo(inp) {
   return sandCount(points, maxY + 2);
 }
 
-const test1 = partOne(sample);
-console.log("part 1 sample", test1);
-if (test1 !== sampleSol) {
-  console.log("Failed the part 1 test");
-  process.exit(1);
-}
-console.log("part 1 sol:", partOne(inp));
+(async function main() {
+  const test1 = await partOne(sample);
+  console.log("part 1 sample", test1);
+  if (test1 !== sampleSol) {
+    console.log("Failed the part 1 test");
+    process.exit(1);
+  }
 
-const test2 = partTwo(sample);
-console.log("part 2 sample", test2);
-if (test2 !== sample2Sol) {
-  console.log("Failed the part 2 test");
-  process.exit(1);
-}
+  const sol1 = await partOne(inp);
+  console.log("part 1 sol:", sol1);
 
-console.log("part 2 sol:", partTwo(inp));
+  const test2 = await partTwo(sample);
+  console.log("part 2 sample", test2);
+  if (test2 !== sample2Sol) {
+    console.log("Failed the part 2 test");
+    process.exit(1);
+  }
+
+  const sol2 = await partTwo(inp);
+  console.log("part 2 sol:", sol2);
+})();

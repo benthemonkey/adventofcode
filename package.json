@@ -10,8 +10,12 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@types/node": "^18.11.15",
+        "chalk": "^5.2.0",
         "console.table": "^0.10.0",
-        "lodash": "^4.17.21"
+        "kruskal": "^0.0.5",
+        "lodash": "^4.17.21",
+        "random-seed": "^0.3.0"
     },
     "devDependencies": {
         "@types/lodash": "^4.14.191",
