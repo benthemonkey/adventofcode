@@ -1,5 +1,4 @@
 import fs from "fs";
-import _ from "lodash";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n\n");
 const sampleSol = 13;
 const sample2Sol = 140;
@@ -7,7 +6,7 @@ const inp = fs.readFileSync(__dirname + "/input.txt", "utf8").split("\n\n");
 
 type TypeSignal = number | TypeSignal[];
 function parse(inp: string): [TypeSignal, TypeSignal] {
-  return inp.split("\n").map(eval);
+  return inp.split("\n").map(eval) as [TypeSignal, TypeSignal];
 }
 
 function compare(val1: TypeSignal, val2: TypeSignal, part2): -1 | 0 | 1 {

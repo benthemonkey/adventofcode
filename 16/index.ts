@@ -1,7 +1,5 @@
 import fs from "fs";
 import _ from "lodash";
-import chalk from "chalk";
-import kruskal from "kruskal";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n");
 const sampleSol = 1651;
 const sample2Sol = 1707;

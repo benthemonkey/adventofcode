@@ -1,8 +1,6 @@
-const fs = require("fs");
-const _ = require("lodash");
+import fs from "fs";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8");
 const sampleSol = 31;
-require("console.table");
 const sample2Sol = 29;
 const inp = fs.readFileSync(__dirname + "/input.txt", "utf8");
 
@@ -143,7 +141,7 @@ function traverseGrid(
 function traverseGrid2(
   grid: number[][],
   test: typeof testFunc,
-  start: [number, number],
+  start: [number, number]
 ): number {
   // Keep track of the minimum number of steps
   let minSteps = Infinity;
@@ -164,7 +162,7 @@ function traverseGrid2(
     const [x, y, steps] = queue[0];
     queue.shift();
 
-    console.log(x, y, steps)
+    // console.log(x, y, steps);
 
     if (visited[[x, y].join(",")]) continue;
     visited[[x, y].join(",")] = true;
@@ -199,14 +197,12 @@ function traverseGrid2(
 
 function partOne(inp) {
   const { grid, start, goal } = parse(inp);
-  console.table(grid);
 
   return traverseGrid(grid, testFunc, start, goal);
 }
 
 function partTwo(inp) {
   const { grid, start, goal } = parse(inp);
-  console.table(grid);
 
   return traverseGrid2(grid, testFunc, goal);
 }

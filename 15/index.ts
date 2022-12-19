@@ -1,6 +1,5 @@
 import fs from "fs";
-import _ from "lodash";
-import chalk from "chalk";
+
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n");
 const sampleSol = 26;
 const sample2Sol = 56000011;
@@ -12,6 +11,7 @@ function parse(line: string): { sensor: Coord; beacon: Coord } {
   const regex =
     /Sensor at x=(-?\d+), y=(-?\d+)\: closest beacon is at x=(-?\d+), y=(-?\d+)/g;
   const out = regex.exec(line);
+  if (!out) throw new Error("satisfy typescript");
   return {
     sensor: { x: parseInt(out[1], 10), y: parseInt(out[2], 10) },
     beacon: { x: parseInt(out[3], 10), y: parseInt(out[4], 10) },
@@ -29,7 +29,7 @@ function partOne(inp, y) {
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];
     const dist = distance(sensor.sensor, sensor.beacon);
-    console.log(dist);
+
     for (let j = -y * 50; j < y * 50; j++) {
       if (distance(sensor.sensor, { x: j, y }) <= dist) {
         unavailable[j] = true;
@@ -38,7 +38,6 @@ function partOne(inp, y) {
   }
 
   for (let i = 0; i < sensors.length; i++) {
-    console.log(sensors[i].beacon.y);
     if (sensors[i].beacon.y === y) {
       unavailable[sensors[i].beacon.x] = false;
     }
@@ -61,11 +60,9 @@ function* area(sensor: Coord, beacon: Coord) {
 }
 
 function partTwo(inp, maxVal) {
-  console.time('foo');
   const sensors = inp.map(parse);
 
   for (let i = 0; i < sensors.length; i++) {
-    console.log("sensor", i);
     for (const { x, y } of area(sensors[i].sensor, sensors[i].beacon)) {
       if (x < 0 || x > maxVal || y < 0 || y > maxVal) {
         continue;
@@ -80,7 +77,6 @@ function partTwo(inp, maxVal) {
         }
       }
       if (success) {
-        console.timeEnd('foo')
         return 4000000 * x + y;
       }
     }
@@ -95,8 +91,8 @@ function partTwo(inp, maxVal) {
     process.exit(1);
   }
 
-  // const sol1 = await partOne(inp, 2000000);
-  // console.log("part 1 sol:", sol1);
+  const sol1 = await partOne(inp, 2000000);
+  console.log("part 1 sol:", sol1);
 
   const test2 = await partTwo(sample, 20);
   console.log("part 2 sample", test2);
@@ -108,23 +104,3 @@ function partTwo(inp, maxVal) {
   const sol2 = await partTwo(inp, 4000000);
   console.log("part 2 sol:", sol2);
 })();
-
-// const vals = area({ x: 10, y: 10 }, { x: 15, y: 10 }).reduce((acc, foo) => {
-//   acc[[foo.x, foo.y].join(",")] = true;
-//   return acc;
-// }, {});
-// console.log(vals);
-
-// let out = "\n\n";
-// for (let i = 0; i < 20; i++) {
-//   for (let j = 0; j < 20; j++) {
-//     if (vals[[i, j].join(",")]) {
-//       out += "x";
-//     } else {
-//       out += ".";
-//     }
-//   }
-//   out += "\n";
-// }
-
-// console.log(out);
