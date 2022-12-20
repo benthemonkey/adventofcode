@@ -5,16 +5,14 @@ const sampleSol = 3;
 const sample2Sol = 1623178306;
 const inp = fs.readFileSync(__dirname + "/input.txt", "utf8").split("\n");
 
-function partOne(inp: string[]) {
-  const nums = inp.map((x) => parseInt(x, 10));
+function mix(nums: number[], times = 1): number {
   const list = nums.map((val, ind) => ({ val, ind }));
-  for (let i = 0; i < list.length; i++) {
-    const currentInd = list.findIndex(({ ind }) => ind === i);
+  for (let i = 0; i < list.length * times; i++) {
+    const currentInd = list.findIndex(({ ind }) => ind === i % list.length);
     if (currentInd === -1) throw new Error("didnt find el");
     const [el] = list.splice(currentInd, 1);
     list.splice((currentInd + el.val) % list.length, 0, el);
   }
-
 
   const zeroIndex = list.findIndex(({ val }) => val === 0);
   if (zeroIndex === -1) throw new Error("didnt find zero el");
@@ -24,25 +22,15 @@ function partOne(inp: string[]) {
   return _.sum(keys);
 }
 
-function partTwo(inp: string[]) {
+function partOne(inp: string[]) {
   const nums = inp.map((x) => parseInt(x, 10));
+  return mix(nums);
+}
+
+function partTwo(inp: string[]) {
   const decryptionKey = 811589153;
-  const list = nums.map((val, ind) => ({ val: val * decryptionKey, ind }));
-
-  for (let i = 0; i < list.length * 10; i++) {
-    const currentInd = list.findIndex(({ ind }) => ind === i % list.length);
-    if (currentInd === -1) throw new Error("didnt find el");
-    const [el] = list.splice(currentInd, 1);
-    list.splice((currentInd + el.val) % list.length, 0, el);
-  }
-
-
-  const zeroIndex = list.findIndex(({ val }) => val === 0);
-  if (zeroIndex === -1) throw new Error("didnt find zero el");
-  const keys = [1000, 2000, 3000].map(
-    (x) => list[(zeroIndex + x) % list.length].val
-  );
-  return _.sum(keys);
+  const nums = inp.map((x) => parseInt(x, 10) * decryptionKey);
+  return mix(nums, 10);
 }
 
 (async function main() {
