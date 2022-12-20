@@ -9,7 +9,7 @@ type Coord = { x: number; y: number };
 
 function parse(line: string): { sensor: Coord; beacon: Coord } {
   const regex =
-    /Sensor at x=(-?\d+), y=(-?\d+)\: closest beacon is at x=(-?\d+), y=(-?\d+)/g;
+    /Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)/g;
   const out = regex.exec(line);
   if (!out) throw new Error("satisfy typescript");
   return {

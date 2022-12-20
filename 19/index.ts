@@ -102,39 +102,20 @@ function maxGeodes(plan: Plan, time: number): number {
     plan.obsidianRobotOre
   );
   let maxG = 0;
-  // let maxH;
-  // let firstGeoIndex = Infinity;
-  // const maxIters = 2000000;
-  // let skipped = 0;
-  // let i = 0;
 
   while (queue.length > 0) {
-    // i++;
     const s = queue.shift()!;
 
     if (s.timeLeft === 0) {
       if (s.geodes > maxG) {
         maxG = s.geodes;
-        // maxH = s.history;
-        // firstGeoIndex = s.history.indexOf("geo");
-        // console.log("new max geodes", s.geodes, firstGeoIndex);
       }
       continue;
     }
 
-    // if (
-    //   s.history.length > firstGeoIndex &&
-    //   (s.history.indexOf("geo") === -1 ||
-    //     s.history.indexOf("geo") > firstGeoIndex + 5)
-    // ) {
-    //   continue;
-    // }
-
     // if we somehow made a geode robot every round and arent better than
     // maxG, stop.
     if (maxPossibleGeodes(s) < maxG) {
-      // console.log(`g: ${s.geodeRobots}, t: ${s.timeLeft}, possible: ${maxPossibleGeodes}, maxG: ${maxG}`)
-      // skipped++;
       continue;
     }
 
@@ -219,9 +200,7 @@ function maxGeodes(plan: Plan, time: number): number {
       "clayRobots",
       "oreRobots",
     ]).reverse();
-    // if (i % 100000 === 0) console.log(queue.length, skipped);
   }
-  // console.log(maxH);
 
   return maxG;
 }

@@ -1,11 +1,9 @@
-const fs = require("fs");
+import fs from "fs";
 const sample = fs.readFileSync(__dirname + "/sample1.txt", "utf8").split("\n");
 const sampleSol = 13;
-const sample2 = fs.readFileSync(__dirname + '/sample2.txt', 'utf8').split('\n');
+const sample2 = fs.readFileSync(__dirname + "/sample2.txt", "utf8").split("\n");
 const sample2Sol = 36;
 const inp = fs.readFileSync(__dirname + "/input.txt", "utf8").split("\n");
-
-const visitedCoords = { "0,0": true };
 
 function posOrNeg(x) {
   if (x === 0) {
@@ -43,6 +41,7 @@ function newHead(head: [number, number], dir: string): [number, number] {
 }
 
 function partOne(inp) {
+  const visitedCoords = { "0,0": true };
   let head: [number, number] = [0, 0];
   let tail: [number, number] = [0, 0];
 
@@ -54,7 +53,6 @@ function partOne(inp) {
       head = newHead(head, dir);
       tail = newTailCoord(head, tail);
       visitedCoords[tail.join(",")] = true;
-      console.log(tail);
     }
   }
 
@@ -62,6 +60,7 @@ function partOne(inp) {
 }
 
 function partTwo(inp) {
+  const visitedCoords = { "0,0": true };
   const ropes: [number, number][] = new Array(10).fill([0, 0]);
   for (let i = 0; i < inp.length; i++) {
     const [dir, _count] = inp[i].split(" ");
@@ -76,7 +75,6 @@ function partTwo(inp) {
         }
       }
     }
-    // console.log(ropes)
   }
 
   return Object.keys(visitedCoords).length;
@@ -85,10 +83,10 @@ function partTwo(inp) {
 const test1 = partOne(sample);
 console.log("part 1 sample", test1);
 if (test1 !== sampleSol) {
-	console.log("Failed the part 1 test")
-	process.exit(1);
+  console.log("Failed the part 1 test");
+  process.exit(1);
 }
-console.log("part 1 sol:", partOne(inp))
+console.log("part 1 sol:", partOne(inp));
 
 const test2 = partTwo(sample2);
 console.log("part 2 sample", test2);
@@ -97,4 +95,4 @@ if (test2 !== sample2Sol) {
   process.exit(1);
 }
 
-partTwo(inp);
+console.log("part 2 sol:", partTwo(inp));
