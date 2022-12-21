@@ -14,6 +14,7 @@ node_modules
 /.pnp
 .pnp.js
 .npmrc
+yarn.lock
 
 # Unit test / coverage reports
 htmlcov/
@@ -28,24 +29,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-local_archive/*
-my_local.py
-
-dist/
-build/
-kudzu.egg-info
-heartbeater.log*
-
-*kudzu.env*
-
-kudzu_project/kudzu_app/static/**
-
-mysql_vol/*
-
 *.tar.gz
 .python-version
 env/
-
-kudzu_project/db-backup.json
-
-devbox.json
