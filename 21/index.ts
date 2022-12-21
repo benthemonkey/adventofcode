@@ -1,6 +1,4 @@
-import { doesNotMatch } from "assert";
 import fs from "fs";
-import _ from "lodash";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n");
 const sampleSol = 152;
 const sample2Sol = 301;
@@ -54,14 +52,17 @@ function doMath(
   return eval(`${left} ${operator} ${right}`) as number;
 }
 
-function runMonkeys(id: string, monkeys: Record<string, Line>): number {
+function runMonkeys(
+  id: string,
+  monkeys: Record<string, Line>
+): number | number[] {
   const monkey = monkeys[id];
   if (typeof monkey === "undefined") throw new Error("couldnt find" + id);
   if (monkey.type === "value") {
     return monkey.value;
   } else {
-    const left = runMonkeys(monkey.left, monkeys);
-    const right = runMonkeys(monkey.right, monkeys);
+    const left = runMonkeys(monkey.left, monkeys) as number;
+    const right = runMonkeys(monkey.right, monkeys) as number;
 
     if (monkey.operator === "=") {
       return [left, right];
@@ -80,6 +81,37 @@ function partOne(inp: string[]) {
   return runMonkeys("root", monkeys);
 }
 
+function binarySearchInt(func: (val: number) => number): number | null {
+  let jump = 10;
+  let iter = 0;
+  let guess = 1;
+  let distance = func(guess);
+
+  while (iter < 100000) {
+    iter++;
+    guess += jump;
+
+    const newDistance = func(guess);
+
+    if (newDistance === 0) return guess;
+
+    const accel = Math.abs(distance) - Math.abs(newDistance);
+    if (accel < 0 || distance * newDistance < 0) {
+      guess -= jump;
+
+      if (accel < 0) {
+        jump *= -1;
+      }
+      jump = jump > 0 ? Math.ceil(jump / 2) : Math.floor(jump / 2);
+    } else {
+      jump *= 2;
+      distance = newDistance;
+    }
+  }
+
+  return null;
+}
+
 function partTwo(inp: string[]) {
   const monkeys = inp.map(parse).reduce((acc, monkey) => {
     acc[monkey.id] = monkey;
@@ -89,49 +121,14 @@ function partTwo(inp: string[]) {
   if (monkeys["root"].type === "math") {
     monkeys["root"].operator = "=";
   }
-  let jump = 10;
-  let iter = 0;
-  let distance = Infinity;
-  let guess = 10;
 
-  while (iter < 100000) {
+  return binarySearchInt((val: number) => {
     if (monkeys["humn"].type === "value") {
-      monkeys["humn"].value = guess;
+      monkeys["humn"].value = val;
     }
-    const [left, right] = runMonkeys("root", monkeys);
-    let accel;
-
-    if (iter === 0) {
-      distance = left - right;
-    } else {
-      const newDistance = left - right;
-
-      if (newDistance === 0) return guess;
-
-      accel = Math.abs(distance) - Math.abs(newDistance);
-      if (iter % 1000 === 0) console.log(guess, distance, accel, jump);
-      if (accel < 0 || distance * newDistance < 0) {
-        guess -= jump;
-
-        jump = jump > 0 ? Math.ceil(jump / 2) : Math.floor(jump / 2);
-      } else {
-        if (Math.abs(newDistance) > 10000) {
-          jump += 10000 * (jump > 0 ? 1 : -1);
-        } else if (Math.abs(newDistance) > 1000) {
-          jump += 1000 * (jump > 0 ? 1 : -1);
-        } else {
-          jump = jump > 0 ? Math.ceil(jump / 2) : Math.floor(jump / 2);
-        }
-
-        distance = left - right;
-      }
-    }
-
-    guess += jump;
-    iter++;
-  }
-
-  return 0;
+    const [left, right] = runMonkeys("root", monkeys) as number[];
+    return left - right;
+  });
 }
 
 (async function main() {
