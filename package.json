@@ -10,9 +10,11 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@types/inquirer": "^9.0.3",
         "@types/node": "^18.11.15",
         "chalk": "^5.2.0",
         "console.table": "^0.10.0",
+        "inquirer": "^9.1.4",
         "kruskal": "^0.0.5",
         "lodash": "^4.17.21",
         "random-seed": "^0.3.0"
