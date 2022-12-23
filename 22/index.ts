@@ -25,6 +25,7 @@ class Cube {
     this.warps = {};
     this.sideLength = rows.length % 3 === 0 ? rows.length / 3 : rows.length / 4;
     this.traveler = { coord: [rows[0].indexOf("."), 0], orientation: 0 };
+    this.warpCount = 0;
   }
 
   static getWarpKey(pos: Position): string {
@@ -48,15 +49,6 @@ class Cube {
       (coord[0] + this.rows[0].length) % this.rows[0].length,
       (coord[1] + this.rows.length) % this.rows.length,
     ];
-  }
-
-  atEdge(pos: Position): boolean {
-    return (
-      (pos.coord[0] === this.rows[0].length - 1 && pos.orientation === 0) ||
-      (pos.coord[1] === this.rows.length - 1 && pos.orientation === 1) ||
-      (pos.coord[0] === 0 && pos.orientation === 2) ||
-      (pos.coord[1] === 0 && pos.orientation === 3)
-    );
   }
 
   spaceAtPos(pos: Position): Space {
@@ -127,15 +119,15 @@ class Cube {
     for (let i = 0; i < directions.length; i++) {
       for (let j = 0; j < directions[i].val; j++) {
         const didMove = this.move();
-        // await this.print();
         if (!didMove) break;
       }
-      this.traveler.orientation =
-        (this.traveler.orientation + directions[i].dir) % 4;
-      // await this.print();
+
+      this.traveler = {
+        ...this.traveler,
+        orientation: (this.traveler.orientation + directions[i].dir) % 4,
+      };
     }
 
-    console.log(this.traveler);
     return this.getSecret();
   }
 
@@ -157,12 +149,10 @@ class Cube {
       this.warps[Cube.getWarpKey(pos1)] = {
         coord: pos2.coord,
         orientation: (pos2.orientation + 2) % 4,
-        rgb: [i * 2, startPos1.coord[0], startPos1.coord[1]],
       };
       this.warps[Cube.getWarpKey(pos2)] = {
         coord: pos1.coord,
         orientation: (pos1.orientation + 2) % 4,
-        rgb: [i * 2, startPos1.coord[0], startPos1.coord[1]],
       };
       pos1 = {
         ...pos1,
@@ -173,6 +163,25 @@ class Cube {
         coord: Cube.addCoords(pos2.coord, increment2),
       };
     }
+  }
+
+  traverseCorner(
+    pos: Position,
+    { isClockWise }: { isClockWise: boolean }
+  ): {
+    firstTraversal: Position;
+    secondTraversal: Position;
+    gapFacing: Position;
+  } | null {
+    const firstTraversal = this.findNextPosition(pos);
+    if (this.spaceAtPos(firstTraversal) === " ") return null;
+    const gapFacing = {
+      coord: firstTraversal.coord,
+      orientation: (firstTraversal.orientation + (isClockWise ? 1 : 3)) % 4,
+    };
+    const secondTraversal = this.findNextPosition(gapFacing);
+
+    return { firstTraversal, secondTraversal, gapFacing };
   }
 
   addWarps() {
@@ -186,8 +195,8 @@ class Cube {
     const verticalChecks = this.rows.length / this.sideLength;
     const horizontalChecks = this.rows[0].length / this.sideLength;
     let addedWarp = true;
+
     while (addedWarp) {
-      console.log("Doing a round of warp adding");
       addedWarp = false;
       for (let y = 0; y < verticalChecks; y++) {
         for (let x = 0; x < horizontalChecks; x++) {
@@ -202,47 +211,42 @@ class Cube {
               Cube.addCoords(cornerStartCoord, checkCoord)
             );
             if (this.spaceAtPos({ coord, orientation: 0 }) === " ") continue;
-            const nextPos1 = this.findNextPosition({
-              coord,
-              orientation: checkCoord[0] === 0 ? 0 : 2,
-            });
-            const nextPos2 = this.findNextPosition({
-              coord,
-              orientation: checkCoord[1] === 0 ? 1 : 3,
-            });
+
+            const traversal1 = this.traverseCorner(
+              {
+                coord,
+                orientation: checkCoord[0] === 0 ? 0 : 2,
+              },
+              { isClockWise: checkCoord[0] === checkCoord[1] }
+            );
+
+            const traversal2 = this.traverseCorner(
+              {
+                coord,
+                orientation: checkCoord[1] === 0 ? 1 : 3,
+              },
+              { isClockWise: checkCoord[0] !== checkCoord[1] }
+            );
+
+            if (traversal1 === null || traversal2 === null) continue;
+
             if (
-              this.spaceAtPos(nextPos1) !== " " &&
-              this.spaceAtPos(nextPos2) !== " "
+              !Cube.coordsMatch(
+                traversal1.firstTraversal.coord,
+                traversal2.secondTraversal.coord
+              ) &&
+              !Cube.coordsMatch(
+                traversal2.firstTraversal.coord,
+                traversal1.secondTraversal.coord
+              )
             ) {
-              const turnRight1 = checkCoord[0] === checkCoord[1];
-              const finalCheckCoord1 = {
-                coord: nextPos1.coord,
-                orientation: (nextPos1.orientation + (turnRight1 ? 1 : 3)) % 4,
-              };
-              const finalPos1 = this.findNextPosition(finalCheckCoord1);
-              const turnRight2 = !turnRight1;
-              const finalCheckCoord2 = {
-                coord: nextPos2.coord,
-                orientation: (nextPos2.orientation + (turnRight2 ? 1 : 3)) % 4,
-              };
-              const finalPos2 = this.findNextPosition(finalCheckCoord2);
-
-              if (
-                !Cube.coordsMatch(finalPos2.coord, nextPos1.coord) &&
-                !Cube.coordsMatch(finalPos1.coord, nextPos2.coord)
-              ) {
-                // we're at a corner!
-                console.log(
-                  "AT A CORNER",
-                  coord,
-                  finalCheckCoord1,
-                  finalCheckCoord2
-                );
-
-                this.addWarpsForCorner(finalCheckCoord1, finalCheckCoord2);
-                addedWarp = true;
-                break;
-              }
+              // we're at a corner!
+              this.addWarpsForCorner(
+                traversal1.gapFacing,
+                traversal2.gapFacing
+              );
+              addedWarp = true;
+              break;
             }
           }
         }
@@ -261,7 +265,8 @@ class Cube {
   async print() {
     const orientationToChar = [">", "V", "<", "^"];
     let out = "=====\n\n";
-    for (let i = 0; i < this.rows.length; i++) {
+    const maxY = Math.min(this.rows.length, this.traveler.coord[1] + 25);
+    for (let i = Math.max(0, this.traveler.coord[1] - 25); i < maxY; i++) {
       for (let j = 0; j < this.rows[0].length; j++) {
         if (this.traveler.coord[0] === j && this.traveler.coord[1] === i) {
           out += chalk.yellow(orientationToChar[this.traveler.orientation]);
@@ -269,44 +274,6 @@ class Cube {
           out += this.rows[i][j];
         }
         out += " ";
-      }
-      out += "\n";
-    }
-    console.log(out);
-    return await inquirer.prompt([
-      { type: "confirm", name: "foo", message: "continue?" },
-    ]);
-  }
-
-  async printWarps() {
-    const orientationToChar = [">", "V", "<", "^"];
-    const warpsByCoord = Object.keys(this.warps).reduce((acc, key) => {
-      const [x, y, o] = key.split(":");
-      const newKey = [x, y].join(":");
-      if (acc[newKey]) {
-        acc[newKey].push({ o, rgb: this.warps[key].rgb });
-      } else {
-        acc[newKey] = [{ o, rgb: this.warps[key].rgb }];
-      }
-      return acc;
-    }, {});
-    let out = "=====\n\n";
-    for (let i = 0; i < this.rows.length; i++) {
-      for (let j = 0; j < this.rows[0].length; j++) {
-        const warp = warpsByCoord[[j, i].join(":")];
-        if (warp) {
-          let tmp = orientationToChar[warp[0].o];
-          if (warp.length > 1) {
-            tmp += orientationToChar[warp[1].o];
-          } else {
-            tmp += "▮";
-          }
-          out += chalk
-            .rgb(...warp[0].rgb)
-            .bold(tmp);
-        } else {
-          out += this.rows[i][j] + " ";
-        }
       }
       out += "\n";
     }
@@ -360,31 +327,6 @@ async function partTwo(inp: string[]) {
 
   const cube = new Cube(rows, true);
   cube.addWarps();
-  console.log(
-    _.orderBy(
-      _.map(cube.warps, (val, key) => ({ key: _.padEnd(key, 10), val })),
-      ["val.coord[0]", "val.coord[1]"],
-      ["asc", "asc"]
-    )
-      .map(JSON.stringify)
-      .join("\n")
-  );
-  console.log(Object.keys(cube.warps).length);
-  await cube.printWarps();
-  // const keys = Object.keys(cube.warps).reverse();
-  // const initialTraveler = cube.traveler;
-  // for (let i = 0; i < keys.length; i++) {
-  //   const [x, y, o] = keys[i].split(":").map((z) => parseInt(z, 10));
-  //   if (![0, 3].includes(x % cube.sideLength) || ![0, 3].includes(y % cube.sideLength)) continue;
-  //   cube.traveler = { coord: [x, y], orientation: o };
-  //   console.log(cube.traveler);
-  //   await cube.print();
-  //   cube.traveler = cube.warps[keys[i]];
-  //   console.log(cube.traveler);
-  //   await cube.print();
-  // }
-  // cube.traveler = initialTraveler;
-
   return await cube.run(directions);
 }
 
