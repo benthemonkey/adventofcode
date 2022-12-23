@@ -1,3 +1,6 @@
+import fs from "fs";
+const lines = fs.readFileSync(__dirname + "/input.txt", "utf8").split("\n");
+
 const vals = "0abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 function findLetter(input) {
@@ -23,11 +26,10 @@ function findLetter3(inputs) {
   }
 }
 
-const fs = require("fs");
-
-const lines = fs.readFileSync("three.txt", "utf8").split("\n");
-
-// console.log(lines.map(findLetter).reduce((a, b) => a + b))
+console.log(
+  "part 1: ",
+  lines.map(findLetter).reduce((a, b) => a + b)
+);
 
 const groups = [];
 let temp = [];
@@ -41,4 +43,7 @@ for (let i = 0; i < lines.length; i++) {
   }
 }
 
-console.log(groups.map(findLetter3).reduce((a, b) => a + b));
+console.log(
+  "part 2: ",
+  groups.map(findLetter3).reduce((a, b) => a + b)
+);

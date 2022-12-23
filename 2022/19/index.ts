@@ -205,7 +205,7 @@ function maxGeodes(plan: Plan, time: number): number {
   return maxG;
 }
 
-function partOne(inp) {
+function partOne(inp: string[]) {
   const plans = inp.map(parse);
 
   let total = 0;
@@ -217,7 +217,7 @@ function partOne(inp) {
   return total;
 }
 
-function partTwo(inp) {
+function partTwo(inp: string[]) {
   const plans = inp.map(parse);
 
   let total = 1;

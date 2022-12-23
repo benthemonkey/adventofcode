@@ -138,8 +138,8 @@ class Screen {
   }
 }
 
-async function partOne(inp) {
-  const moves = inp.split("");
+async function partOne(inp: string) {
+  const moves = inp.split("") as ("<" | ">")[];
   const screen = new Screen(7, shapes, moves);
 
   for (let i = 0; i < 2022; i++) {
@@ -148,8 +148,8 @@ async function partOne(inp) {
   return screen.maxY + 1;
 }
 
-function partTwo(inp) {
-  const moves = inp.split("");
+function partTwo(inp: string) {
+  const moves = inp.split("") as ("<" | ">")[];
   const screen = new Screen(7, shapes, moves);
   const rockCount = 1000000000000;
   const initialIters = 1000;

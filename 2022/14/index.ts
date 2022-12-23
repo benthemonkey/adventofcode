@@ -1,6 +1,7 @@
 import fs from "fs";
 import _ from "lodash";
 import chalk from "chalk";
+import logUpdate from "log-update";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n");
 const sampleSol = 24;
 const sample2Sol = 93;
@@ -13,7 +14,7 @@ const printCave = (walls: string[]) => {
   let maxY = 0;
   let minX = Infinity;
   let maxX = 0;
-  const wallsLookup = {};
+  const wallsLookup: Record<string, boolean> = {};
 
   walls.forEach((wall) => {
     const [x, y] = wall.split(",").map((x) => parseInt(x, 10));
@@ -42,7 +43,7 @@ const printCave = (walls: string[]) => {
       out += "\n";
     }
 
-    console.log(out);
+    logUpdate(out);
   };
 };
 
@@ -110,12 +111,12 @@ function moveSand(
   }
 }
 
-async function sandCount(walls: string[], maxY: number) {
+async function sandCount(walls: string[], maxY: number, print = false) {
   const printer = printCave(walls);
   const occupied = walls.reduce((acc, wall) => {
     acc[wall] = true;
     return acc;
-  }, {});
+  }, {} as Record<string, boolean>);
 
   let sandLanded = true;
   let count = 0;
@@ -139,23 +140,22 @@ async function sandCount(walls: string[], maxY: number) {
       } else {
         sand = newSand;
       }
-
-      if (Math.random() < 0.01) {
-        printer(occupied, sand);
-        await new Promise((res) => setTimeout(res, 100));
-      }
+    }
+    if (print && count % 500 === 0) {
+      printer(occupied, sand);
+      await new Promise((res) => setTimeout(res, 100));
     }
   }
 
   return count;
 }
 
-function partOne(inp) {
+function partOne(inp: string[]) {
   const { points, maxY } = parse(inp);
-  return sandCount(points, maxY);
+  return sandCount(points, maxY); // , true
 }
 
-function partTwo(inp) {
+function partTwo(inp: string[]) {
   const { points, maxY } = parse(inp);
   part2 = true;
   return sandCount(points, maxY + 2);

@@ -23,18 +23,15 @@ function operationFactory(rawOperation: string) {
   return (val: number) => {
     const old = val;
     const newVal = eval(rawOperation.substring(17));
-    // if (typeof newVal !== "number") {
-    //   throw new Error(
-    //     "operation did not return number" +
-    //       JSON.stringify({ rawOperation, val })
-    //   );
-    // }
 
     return newVal;
   };
 }
 
-function doRound(monkeys: TypeMonkey[], postInpsectionStep): TypeMonkey[] {
+function doRound(
+  monkeys: TypeMonkey[],
+  postInpsectionStep: (val: number, monkey: TypeMonkey) => number
+): TypeMonkey[] {
   for (let i = 0; i < monkeys.length; i++) {
     const monkey = monkeys[i];
 
@@ -76,44 +73,37 @@ function parse(rawMonkey: string): TypeMonkey {
   };
 }
 
-function partOne(inp) {
+function partOne(inp: string[]) {
   let monkeys = inp.map(parse);
 
   for (let i = 0; i < 20; i++) {
     monkeys = doRound(monkeys, postInpsectionStep);
   }
-  // console.log(monkeys)
 
   const topMonkeys = _.sortBy(monkeys.map((x) => x.inspected));
-  return topMonkeys.pop() * topMonkeys.pop();
+  return topMonkeys.pop()! * topMonkeys.pop()!;
 }
 
-function partTwo(inp) {
+function partTwo(inp: string[]) {
   let monkeys = inp.map(parse);
 
-  const highestVal = monkeys.reduce((acc, m) => acc * m.test, 1)
-
-  console.log(highestVal)
+  const highestVal = monkeys.reduce((acc, m) => acc * m.test, 1);
 
   for (let i = 0; i < 10000; i++) {
-    monkeys = doRound(monkeys, (x, monkey) => (x % highestVal));
-    // console.log(monkeys[2].inspected);
-    if (i % 100 === 0) console.log(i)
+    monkeys = doRound(monkeys, (x, monkey) => x % highestVal);
   }
-  // console.log(monkeys);
 
   const topMonkeys = _.sortBy(monkeys.map((x) => x.inspected));
-  console.log(topMonkeys);
-  return topMonkeys.pop() * topMonkeys.pop();
+  return topMonkeys.pop()! * topMonkeys.pop()!;
 }
 
-// const test1 = partOne(sample);
-// console.log("part 1 sample", test1);
-// if (test1 !== sampleSol) {
-//   console.log("Failed the part 1 test");
-//   process.exit(1);
-// }
-// console.log("part 1 sol:", partOne(inp));
+const test1 = partOne(sample);
+console.log("part 1 sample", test1);
+if (test1 !== sampleSol) {
+  console.log("Failed the part 1 test");
+  process.exit(1);
+}
+console.log("part 1 sol:", partOne(inp));
 
 const test2 = partTwo(sample);
 console.log("part 2 sample", test2);

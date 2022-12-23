@@ -1,40 +1,14 @@
 import fs from "fs/promises";
-const sampleSol = 150;
-const sample2Sol = 900;
-
-function parse(line: string): { type: "x" | "y"; val: number } {
-  const [cmd, val] = line.split(" ");
-  return {
-    type: cmd === "forward" ? "x" : "y",
-    val: parseInt(val, 10) * (cmd === "up" ? -1 : 1),
-  };
-}
+import _ from "lodash";
+const sampleSol = 0;
+const sample2Sol = 0;
 
 function partOne(rawLines: string[]) {
-  const { x, y } = rawLines.reduce(
-    (acc, line) => {
-      const { type, val } = parse(line);
-      acc[type] += val;
-      return acc;
-    },
-    { x: 0, y: 0 }
-  );
-  return x * y;
+  return 0;
 }
 
 function partTwo(rawLines: string[]) {
-  const { depth, x } = rawLines.reduce(
-    (acc, line) => {
-      const { type, val } = parse(line);
-      acc[type] += val;
-      if (type === "x") {
-        acc.depth += acc.y * val;
-      }
-      return acc;
-    },
-    { x: 0, y: 0, depth: 0 }
-  );
-  return depth * x;
+  return 0;
 }
 
 (async function main() {

@@ -22,16 +22,18 @@ function distance(one: Coord, two: Coord) {
   return Math.abs(one.x - two.x) + Math.abs(one.y - two.y);
 }
 
-function partOne(inp, y) {
+function partOne(inp: string[], y: number) {
   const sensors = inp.map(parse);
   const unavailable: Record<number, boolean> = {};
 
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];
     const dist = distance(sensor.sensor, sensor.beacon);
+    const distFromY = Math.abs(sensor.sensor.y - y);
+    const xRange = dist - distFromY;
 
-    for (let j = -y * 50; j < y * 50; j++) {
-      if (distance(sensor.sensor, { x: j, y }) <= dist) {
+    for (let j = sensor.sensor.x - xRange; j <= sensor.sensor.x + xRange; j++) {
+      if (!unavailable[j] && distance(sensor.sensor, { x: j, y }) <= dist) {
         unavailable[j] = true;
       }
     }
@@ -39,14 +41,14 @@ function partOne(inp, y) {
 
   for (let i = 0; i < sensors.length; i++) {
     if (sensors[i].beacon.y === y) {
-      unavailable[sensors[i].beacon.x] = false;
+      delete unavailable[sensors[i].beacon.x];
     }
     if (sensors[i].sensor.y === y) {
-      unavailable[sensors[i].sensor.x] = false;
+      delete unavailable[sensors[i].sensor.x];
     }
   }
 
-  return Object.values(unavailable).filter(Boolean).length;
+  return Object.values(unavailable).length;
 }
 
 function* area(sensor: Coord, beacon: Coord) {
@@ -59,7 +61,7 @@ function* area(sensor: Coord, beacon: Coord) {
   }
 }
 
-function partTwo(inp, maxVal) {
+function partTwo(inp: string[], maxVal: number) {
   const sensors = inp.map(parse);
 
   for (let i = 0; i < sensors.length; i++) {

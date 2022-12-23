@@ -1,14 +1,14 @@
 import fs from "fs/promises";
 import _ from "lodash";
 const sampleSol = 58;
-const sample2Sol = 0;
+// const sample2Sol = 0;
 
 class SeaFloor {
   sea: string[][];
   next: string[][];
   width: number;
   height: number;
-  constructor(sea) {
+  constructor(sea: string[][]) {
     this.sea = sea;
     this.next = _.cloneDeep(sea);
     this.width = sea[0].length;
@@ -20,15 +20,15 @@ class SeaFloor {
     this.next = _.cloneDeep(this.next);
   }
 
-  getAtPos(row, col) {
+  getAtPos(row: number, col: number) {
     return this.sea[row % this.height][col % this.width];
   }
 
-  setAtPos(row, col, val) {
+  setAtPos(row: number, col: number, val: string) {
     this.next[row % this.height][col % this.width] = val;
   }
 
-  move(row, col) {
+  move(row: number, col: number) {
     const val = this.getAtPos(row, col);
 
     switch (val) {
@@ -93,9 +93,9 @@ function partOne(rawLines: string[]) {
   return iter;
 }
 
-function partTwo(rawLines: string[]) {
-  return 0;
-}
+// function partTwo(rawLines: string[]) {
+//   return 0;
+// }
 
 (async function main() {
   const sample = await fs
@@ -115,13 +115,13 @@ function partTwo(rawLines: string[]) {
   const sol1 = await partOne(input);
   console.log("part 1 sol:", sol1);
 
-  const test2 = await partTwo(sample);
-  console.log("part 2 sample", test2);
-  if (test2 !== sample2Sol) {
-    console.log("Failed the part 2 test");
-    process.exit(1);
-  }
+  // const test2 = await partTwo(sample);
+  // console.log("part 2 sample", test2);
+  // if (test2 !== sample2Sol) {
+  //   console.log("Failed the part 2 test");
+  //   process.exit(1);
+  // }
 
-  const sol2 = await partTwo(input);
-  console.log("part 2 sol:", sol2);
+  // const sol2 = await partTwo(input);
+  // console.log("part 2 sol:", sol2);
 })();

@@ -62,6 +62,8 @@ function parse(lines: string[]): {
     }
   );
 
+  if (!startNode) throw new Error("Failed to find startNode");
+
   return {
     nodes,
     primaryNodes: [startNode, ...primaryNodes],
@@ -247,7 +249,7 @@ function traverseWeightedGraph2(nodes: Record<string, Node>, start: Node) {
   return maxPressure;
 }
 
-function partOne(inp) {
+function partOne(inp: string[]) {
   const { nodes, primaryNodes } = parse(inp);
 
   for (let i = 0; i < primaryNodes.length; i++) {
@@ -259,7 +261,7 @@ function partOne(inp) {
   return traverseWeightedGraph(primaryNodeLookup, primaryNodes[0]);
 }
 
-function partTwo(inp) {
+function partTwo(inp: string[]) {
   const { nodes, primaryNodes } = parse(inp);
 
   for (let i = 0; i < primaryNodes.length; i++) {

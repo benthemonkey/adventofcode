@@ -1,6 +1,6 @@
-const fs = require("fs");
-const inp = fs.readFileSync("./seven.txt", "utf8").split("\n");
-const _ = require("lodash");
+import fs from "fs";
+import _ from "lodash";
+const inp = fs.readFileSync(__dirname + "/input.txt", "utf8").split("\n");
 
 type TypeDir = {
   name: string;
@@ -21,7 +21,7 @@ function setFileAtPath(
   path: string[],
   file: string,
   size: number
-) {
+): void {
   fs.size += size;
   if (path.length === 0) {
     fs.files[file] = size;
@@ -38,7 +38,7 @@ function setFileAtPath(
   return setFileAtPath(dir, path.slice(1), file, size);
 }
 
-function sumFoldersAboveSize(filesystem: TypeDir, maxSize: number) {
+function sumFoldersAboveSize(filesystem: TypeDir, maxSize: number): number {
   let sum = 0;
   if (filesystem.size < maxSize) {
     sum += filesystem.size;
@@ -89,14 +89,14 @@ function evalCommands(inp: string[]) {
   }
 
   // part 1
-  // console.log(sumFoldersAboveSize(filesystem, 100000));
+  console.log("part 1: ", sumFoldersAboveSize(filesystem, 100000));
 
   // part 2
   const diff = filesystem.size - 40000000;
   const children = flattenChildren(filesystem);
   const filteredChildren = children.filter((x) => x.size > diff);
 
-  console.log(_.minBy(filteredChildren, "size")?.size);
+  console.log("part 2: ", _.minBy(filteredChildren, "size")?.size);
 }
 
-console.log(evalCommands(inp));
+evalCommands(inp);

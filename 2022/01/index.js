@@ -1,5 +1,5 @@
-const fs = require("fs");
-const input = fs.readFileSync("./one.txt", "utf8");
+import fs from "fs";
+const input = fs.readFileSync(__dirname + "/input.txt", "utf8");
 
 function elfCals(elf) {
   return elf
@@ -29,5 +29,5 @@ function topThreeElves(input) {
   return cals[0] + cals[1] + cals[2];
 }
 
-console.log(maxCals(input));
-console.log(topThreeElves(input));
+console.log("part 1: ", maxCals(input));
+console.log("part 2: ", topThreeElves(input));

@@ -1,14 +1,12 @@
-const fs = require("fs");
+import fs from "fs";
 const inp = fs
-  .readFileSync("./eight.txt", "utf8")
+  .readFileSync(__dirname + "/input.txt", "utf8")
   .split("\n")
   .map((x) => x.split(""));
 
-console.log(inp);
+let visible = inp.length * 2 + (inp[0].length - 2) * 2;
 
-const visible = inp.length * 2 + (inp[0].length - 2) * 2;
-
-function isLower(grid, x, y) {
+function isLower(grid: string[][], x: number, y: number) {
   // Check if the value at the given coordinate is lower than the values
   // to the left, right, up, and down, until the edge of the grid is reached.
   let left = true;
@@ -31,7 +29,7 @@ function isLower(grid, x, y) {
   return left || right || up || down;
 }
 
-function score(grid, x, y) {
+function score(grid: string[][], x: number, y: number) {
   // Check if the value at the given coordinate is lower than the values
   // to the left, right, up, and down, until the edge of the grid is reached.
   let left = 0;
@@ -74,13 +72,14 @@ function score(grid, x, y) {
   return left * right * up * down;
 }
 
-// for (let i = 1; i < inp.length - 1; i++) {
-// 	for (let j = 1; j < inp[0].length - 1; j++) {
-// 		if (isLower(inp, i, j)) {
-// 			visible++;
-// 		}
-// 	}
-// }
+for (let i = 1; i < inp.length - 1; i++) {
+  for (let j = 1; j < inp[0].length - 1; j++) {
+    if (isLower(inp, i, j)) {
+      visible++;
+    }
+  }
+}
+console.log("part1: ", visible);
 
 let max = 0;
 for (let i = 1; i < inp.length - 1; i++) {
@@ -92,4 +91,4 @@ for (let i = 1; i < inp.length - 1; i++) {
   }
 }
 
-console.log(max);
+console.log("part2: ", max);

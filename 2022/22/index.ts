@@ -25,7 +25,6 @@ class Cube {
     this.warps = {};
     this.sideLength = rows.length % 3 === 0 ? rows.length / 3 : rows.length / 4;
     this.traveler = { coord: [rows[0].indexOf("."), 0], orientation: 0 };
-    this.warpCount = 0;
   }
 
   static getWarpKey(pos: Position): string {

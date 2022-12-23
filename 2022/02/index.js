@@ -1,5 +1,5 @@
-const fs = require("fs");
-const lines = fs.readFileSync("two.txt", "utf8").split("\n");
+import fs from "fs";
+const lines = fs.readFileSync(__dirname + "/input.txt", "utf8").split("\n");
 
 // 0 rock
 // 1 paper
@@ -13,8 +13,6 @@ const letterToPoint = {
   Y: 1,
   Z: 2,
 };
-
-const human = ["rock", "paper", "scissors"];
 
 function didWin(them, me) {
   return (them + 1) % 3 === me;
@@ -42,7 +40,7 @@ function partOne(lines) {
     total += choicePoints(me) + outcomePoints(them, me);
   });
 
-  console.log(total);
+  return total;
 }
 
 function fixOutcome(them, outcome) {
@@ -65,7 +63,8 @@ function partTwo(lines) {
     total += choicePoints(me) + outcomePoints(them, me);
   });
 
-  console.log(total);
+  return total;
 }
 
-partTwo(lines);
+console.log("part 1: ", partOne(lines));
+console.log("part 2: ", partTwo(lines));

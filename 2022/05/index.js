@@ -1,6 +1,8 @@
-const fs = require("fs");
-const _ = require("lodash");
-const [rawCrates, rawSteps] = fs.readFileSync("five.txt", "utf8").split("\n\n");
+import fs from "fs";
+import _ from "lodash";
+const [rawCrates, rawSteps] = fs
+  .readFileSync(__dirname + "/input.txt", "utf8")
+  .split("\n\n");
 
 const crates = rawCrates.split("\n");
 const lastCrates = _.last(crates);
@@ -27,12 +29,14 @@ const steps2 = rawSteps.split("\n").map((x) => {
   return regex.exec(x).slice(1);
 });
 
-// steps2.forEach(([_count, start, end]) => {
-// 	const count = parseInt(_count, 10);
-// 	for (let i = 0; i < count; i++) {
-// 		crates2[end].push(crates2[start].pop())
-// 	}
-// })
+const cratesPartOne = _.cloneDeep(crates2);
+steps2.forEach(([_count, start, end]) => {
+  const count = parseInt(_count, 10);
+  for (let i = 0; i < count; i++) {
+    cratesPartOne[end].push(cratesPartOne[start].pop());
+  }
+});
+console.log("part 1: ", Object.values(cratesPartOne).map(_.last).join(""));
 
 steps2.forEach(([_count, start, end]) => {
   const count = parseInt(_count, 10);
@@ -43,4 +47,4 @@ steps2.forEach(([_count, start, end]) => {
   crates2[end].push(...pile);
 });
 
-console.log(Object.values(crates2).map(_.last).join(""));
+console.log("part 2: ", Object.values(crates2).map(_.last).join(""));

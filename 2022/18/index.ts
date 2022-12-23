@@ -50,7 +50,6 @@ function flood(coords: number[][]): number {
   const minCoord =
     -1 + coords.reduce((acc, coord) => Math.min(...coord, acc), Infinity);
   const occupied: Record<string, boolean> = {};
-  console.log(minCoord, maxCoord);
 
   const queue: number[][] = [[minCoord, minCoord, minCoord]];
   let surface = 0;
@@ -99,7 +98,7 @@ function flood(coords: number[][]): number {
   return surface;
 }
 
-function partTwo(inp) {
+function partTwo(inp: string[]) {
   // look for cubes adjacent to all
   const coords = inp.map((s) => s.split(",").map((x) => parseInt(x, 10)));
 

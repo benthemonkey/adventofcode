@@ -75,6 +75,8 @@ function parse(inp: string): {
     })
   );
 
+  if (!start || !goal) throw new Error("Failed to find start or goal");
+
   return { start, goal, grid };
 }
 
@@ -90,16 +92,13 @@ function traverseGrid(
     row.map((val, y) => testFunc(grid, x, y))
   );
 
-  const visited = {};
+  const visited: Record<string, boolean> = {};
   // x, y, steps, rating
   const queue: [number, number, number][] = [];
   queue.push([start[0], start[1], 0]);
   // Recursive function to traverse the grid
 
-  let iters = 0;
   while (queue.length > 0) {
-    iters++;
-    // queue = _.sortBy(queue, (x) => x[3]);
     const [x, y, steps] = queue[0];
     queue.shift();
 
@@ -149,16 +148,13 @@ function traverseGrid2(
     row.map((val, y) => testFunc2(grid, x, y))
   );
 
-  const visited = {};
+  const visited: Record<string, boolean> = {};
   // x, y, steps, rating
   const queue: [number, number, number][] = [];
   queue.push([start[0], start[1], 0]);
   // Recursive function to traverse the grid
 
-  let iters = 0;
   while (queue.length > 0) {
-    iters++;
-    // queue = _.sortBy(queue, (x) => x[3]);
     const [x, y, steps] = queue[0];
     queue.shift();
 
@@ -195,14 +191,14 @@ function traverseGrid2(
   return minSteps;
 }
 
-function partOne(inp) {
+function partOne(inp: string) {
   const { grid, start, goal } = parse(inp);
 
   return traverseGrid(grid, testFunc, start, goal);
 }
 
-function partTwo(inp) {
-  const { grid, start, goal } = parse(inp);
+function partTwo(inp: string) {
+  const { grid, goal } = parse(inp);
 
   return traverseGrid2(grid, testFunc, goal);
 }

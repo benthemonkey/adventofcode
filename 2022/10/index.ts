@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from "fs";
 const sample = fs.readFileSync(__dirname + "/sample1.txt", "utf8").split("\n");
 const sampleSol = 13140;
 const sample2Sol = 0;
@@ -14,7 +14,7 @@ class Processor {
   register: number;
   cycle: number;
 
-  constructor(queue) {
+  constructor(queue: Item[]) {
     this.queue = queue;
     this.register = 1;
     this.cycle = 0;
@@ -29,7 +29,6 @@ class Processor {
         case "noop":
           break;
         case "addx":
-          // console.log(cmd[1]);
           this.register += parseInt(cmd[1], 10);
 
           break;
@@ -43,7 +42,7 @@ class Processor {
   }
 }
 
-function convertToQueue(instruction): Item {
+function convertToQueue(instruction: string): Item {
   let execDelay = 0;
   if (instruction.startsWith("addx")) {
     execDelay = 1;
@@ -52,28 +51,20 @@ function convertToQueue(instruction): Item {
   return { instruction, execDelay };
 }
 
-function partOne(inp) {
+function partOne(inp: string[]) {
   const p = new Processor(inp.map(convertToQueue));
 
   let result = 0;
   while (p.queue.length && p.cycle < 220) {
     p.processQueue();
     if ((p.cycle + 21) % 40 === 0) {
-      console.log(
-        "cycle",
-        p.cycle + 1,
-        "reg",
-        p.register,
-        "qlen",
-        p.queue.length
-      );
       result += (p.cycle + 1) * p.register;
     }
   }
   return result;
 }
 
-function partTwo(inp) {
+function partTwo(inp: string[]) {
   const p = new Processor(inp.map(convertToQueue));
   process.stdout.write("\n\n");
 

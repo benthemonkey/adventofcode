@@ -5,7 +5,7 @@ const sample2 = fs.readFileSync(__dirname + "/sample2.txt", "utf8").split("\n");
 const sample2Sol = 36;
 const inp = fs.readFileSync(__dirname + "/input.txt", "utf8").split("\n");
 
-function posOrNeg(x) {
+function posOrNeg(x: number) {
   if (x === 0) {
     return 0;
   }
@@ -40,8 +40,8 @@ function newHead(head: [number, number], dir: string): [number, number] {
   }
 }
 
-function partOne(inp) {
-  const visitedCoords = { "0,0": true };
+function partOne(inp: string[]) {
+  const visitedCoords: Record<string, boolean> = { "0,0": true };
   let head: [number, number] = [0, 0];
   let tail: [number, number] = [0, 0];
 
@@ -59,8 +59,8 @@ function partOne(inp) {
   return Object.keys(visitedCoords).length;
 }
 
-function partTwo(inp) {
-  const visitedCoords = { "0,0": true };
+function partTwo(inp: string[]) {
+  const visitedCoords: Record<string, boolean> = { "0,0": true };
   const ropes: [number, number][] = new Array(10).fill([0, 0]);
   for (let i = 0; i < inp.length; i++) {
     const [dir, _count] = inp[i].split(" ");

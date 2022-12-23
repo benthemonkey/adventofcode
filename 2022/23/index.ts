@@ -1,7 +1,4 @@
-import chalk from "chalk";
 import fs from "fs";
-import inquirer from "inquirer";
-import _ from "lodash";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n");
 const sampleSol = 110;
 const sample2Sol = 20;
@@ -38,7 +35,7 @@ class Patch {
       [1, -1],
     ],
   ];
-  constructor(ground) {
+  constructor(ground: string[][]) {
     for (let i = 0; i < ground.length; i++) {
       for (let j = 0; j < ground[0].length; j++) {
         if (ground[i][j] === "#") {

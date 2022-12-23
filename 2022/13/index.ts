@@ -9,7 +9,11 @@ function parse(inp: string): [TypeSignal, TypeSignal] {
   return inp.split("\n").map(eval) as [TypeSignal, TypeSignal];
 }
 
-function compare(val1: TypeSignal, val2: TypeSignal, part2): -1 | 0 | 1 {
+function compare(
+  val1: TypeSignal,
+  val2: TypeSignal,
+  part2 = false
+): -1 | 0 | 1 {
   // console.log("comparing", val1, "and", val2);
   const returnOutOfOrder = part2 ? 1 : -1;
   const returnInOrder = part2 ? -1 : 1;
@@ -38,24 +42,20 @@ function compare(val1: TypeSignal, val2: TypeSignal, part2): -1 | 0 | 1 {
   }
 }
 
-function partOne(inp) {
-  const tmp = inp.map(parse).map(([val1, val2]) => compare(val1, val2, false));
+function partOne(inp: string[]) {
+  const tmp = inp.map(parse).map(([val1, val2]) => compare(val1, val2));
 
-  console.log(tmp);
   return tmp
     .map((x, index) => (x === 1 ? index + 1 : 0))
     .reduce((x, y) => x + y);
 }
 
-function partTwo(inp) {
+function partTwo(inp: string[]) {
   const sorted = parse([...inp, "[[2]]", "[[6]]"].join("\n"))
     .sort((a, b) => compare(a, b, true))
     .map((x) => JSON.stringify(x));
-  console.log(sorted.join("\n"));
   const one = sorted.indexOf("[[2]]") + 1;
   const two = sorted.indexOf("[[6]]") + 1;
-
-  console.log(one, two);
 
   return one * two;
 }
