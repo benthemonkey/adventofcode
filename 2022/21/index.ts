@@ -1,4 +1,5 @@
 import fs from "fs";
+import { binarySearchInt } from "../../utils";
 const sample = fs.readFileSync(__dirname + "/sample.txt", "utf8").split("\n");
 const sampleSol = 152;
 const sample2Sol = 301;
@@ -79,37 +80,6 @@ function partOne(inp: string[]) {
   }, {} as Record<string, Line>);
 
   return runMonkeys("root", monkeys);
-}
-
-function binarySearchInt(func: (val: number) => number): number | null {
-  let jump = 10;
-  let iter = 0;
-  let guess = 1;
-  let distance = func(guess);
-
-  while (iter < 100000) {
-    iter++;
-    guess += jump;
-
-    const newDistance = func(guess);
-
-    if (newDistance === 0) return guess;
-
-    const accel = Math.abs(distance) - Math.abs(newDistance);
-    if (accel < 0 || distance * newDistance < 0) {
-      guess -= jump;
-
-      if (accel < 0) {
-        jump *= -1;
-      }
-      jump = jump > 0 ? Math.ceil(jump / 2) : Math.floor(jump / 2);
-    } else {
-      jump *= 2;
-      distance = newDistance;
-    }
-  }
-
-  return null;
 }
 
 function partTwo(inp: string[]) {
