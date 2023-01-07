@@ -3,11 +3,17 @@ import _ from "lodash";
 const sampleSol = 0;
 const sample2Sol = 0;
 
+function parse(line: string): number[] {
+  return line.split("").map((x) => parseInt(x, 10));
+}
+
 function partOne(rawLines: string[]) {
+  const foo = rawLines.map(parse);
   return 0;
 }
 
 function partTwo(rawLines: string[]) {
+  const foo = rawLines.map(parse);
   return 0;
 }
 

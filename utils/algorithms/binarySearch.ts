@@ -1,5 +1,3 @@
-import _ from "lodash";
-
 type TypeOptions = {
   maxIters?: number;
   initialJump?: number;

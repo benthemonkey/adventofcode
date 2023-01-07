@@ -174,7 +174,7 @@ function partOne(inp: string[]) {
   let committedChange = true;
 
   while (iter < 10 && committedChange) {
-    console.log("on iter", iter);
+    // console.log("on iter", iter);
     committedChange = patch.runRound();
     // patch.print();
 
@@ -190,8 +190,8 @@ function partTwo(inp: string[]) {
   let iter = 0;
   let committedChange = true;
 
-  while (iter < 1000 && committedChange) {
-    console.log("on iter", iter);
+  while (iter < 10000 && committedChange) {
+    // console.log("on iter", iter);
     committedChange = patch.runRound();
     // patch.print();
 
