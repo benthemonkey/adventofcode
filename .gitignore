@@ -32,3 +32,5 @@ coverage.xml
 *.tar.gz
 .python-version
 env/
+
+build
