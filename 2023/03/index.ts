@@ -84,7 +84,7 @@ function getAdjacentGears(
 ): string[] {
   const out: string[] = [];
 
-  const getKey = (x, y) => `${x}-${y}`;
+  const getKey = (x: number, y: number) => `${x}-${y}`;
 
   const minX = Math.max(x - 1, 0);
   const maxX = Math.min(grid[0].length - 1, x + digitCount + 1);

@@ -2,8 +2,10 @@
     "name": "adventofcode",
     "version": "1.0.0",
     "description": "",
-    "main": "five.js",
     "scripts": {
+        "clean": "rimraf build",
+        "copy": "copyfiles 2023/**/*.txt build",
+        "build": "yarn clean && yarn copy && tsc -b",
         "test": "tsc --noEmit && eslint ."
     },
     "keywords": [],
@@ -16,12 +18,14 @@
         "abstract-astar": "^0.2.0",
         "chalk": "^5.2.0",
         "console.table": "^0.10.0",
+        "copyfiles": "^2.4.1",
         "inquirer": "^9.1.4",
         "kruskal": "^0.0.5",
         "lodash": "^4.17.21",
         "log-update": "^5.0.1",
         "mathjs": "^11.5.0",
-        "random-seed": "^0.3.0"
+        "random-seed": "^0.3.0",
+        "rimraf": "^5.0.5"
     },
     "devDependencies": {
         "@types/lodash": "^4.14.191",

@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import _ from "lodash";
 const sampleSol = 8;
-const sample2Sol = 0;
+const sample2Sol = 8;
 
 // 0 - up
 // 1 - right
@@ -19,10 +19,14 @@ interface Position {
   x: number;
   y: number;
   o: number;
-  po: number;
+  po: number; // previous orientation
 }
 
-function nextPosition(grid: string[][], { x, y, o }: Position): Position {
+function nextPosition(
+  grid: string[][],
+  { x, y, o }: Position,
+  startingPos: Position[] = []
+): Position {
   const connecting = FACING_TO_CONNECTING_PIPES[o];
 
   const nextCoord = [
@@ -45,7 +49,9 @@ function nextPosition(grid: string[][], { x, y, o }: Position): Position {
   const nextValue = grid[nextCoord[1]][nextCoord[0]];
   const orientationChange = connecting.indexOf(nextValue) - 1;
 
-  if (orientationChange === -2 && nextValue !== "S") {
+  if (nextValue === "S") {
+    return startingPos.find(({ po }) => po === o) as Position;
+  } else if (orientationChange === -2) {
     throw new Error(
       "invalid connection" + JSON.stringify({ x, y, o, nextCoord, nextValue })
     );
@@ -63,26 +69,21 @@ function getStartingPositions(grid: string[][]): Position[] | null {
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[0].length; x++) {
       if (grid[y][x] === "S") {
-        const out: Position[] = [];
-
+        const validOrientations: number[] = [];
         for (let o = 0; o < 4; o++) {
           let pos: Position | null = null;
           try {
             pos = nextPosition(grid, { x, y, o, po: -1 });
           } catch (e) {
-            console.log(e);
             // ignore
           }
-          if (pos === null) continue;
-
-          if (FACING_TO_CONNECTING_PIPES[o].includes(grid[pos.y][pos.x])) {
-            const orientationChange =
-              FACING_TO_CONNECTING_PIPES[o].indexOf(grid[pos.y][pos.x]) - 1;
-            out.push({ x, y, o, po: (o - orientationChange + 4) % 4 });
-          }
+          if (pos !== null) validOrientations.push(o);
         }
 
-        return out;
+        return [
+          { x, y, o: validOrientations[0], po: (validOrientations[1] + 2) % 4 },
+          { x, y, o: validOrientations[1], po: (validOrientations[0] + 2) % 4 },
+        ];
       }
     }
   }
@@ -99,18 +100,27 @@ function partOne(rawLines: string[]) {
     throw new Error("Failed to find starting pos");
   }
 
-  let pos = nextPosition(grid, startingPos[0]),
-    i = 1;
+  let pos = startingPos[0],
+    i = 0;
 
-  while (
+  do {
+    pos = nextPosition(grid, pos, startingPos);
+    i++;
+  } while (
     !(startingPos[0].x === pos.x && startingPos[0].y === pos.y) &&
     i < 10000000
-  ) {
-    pos = nextPosition(grid, pos);
-    i++;
-  }
+  );
 
   return i / 2;
+}
+
+function getVerticalO(pos: Position): number {
+  if (pos.o % 2 == 0 && pos.po % 2 === 0) {
+    throw new Error("passed bad position");
+  }
+
+  if (pos.o % 2 === 0) return pos.o;
+  return pos.po;
 }
 
 function partTwo(rawLines: string[]) {
@@ -122,45 +132,81 @@ function partTwo(rawLines: string[]) {
     throw new Error("Failed to find starting pos");
   }
 
-  let pos = nextPosition(grid, startingPos[0]),
-    i = 1;
+  let pos = startingPos[0],
+    i = 0;
 
-  const positions = [startingPos[0], pos];
-  while (
-    !(startingPos[0].x === pos.x && startingPos[0].y === pos.y) &&
-    i < 10000000
-  ) {
-    pos = nextPosition(grid, pos);
+  const positions: Position[] = [pos];
+  do {
+    pos = nextPosition(grid, pos, startingPos);
     positions.push(pos);
     i++;
-  }
+  } while (
+    !(startingPos[0].x === pos.x && startingPos[0].y === pos.y) &&
+    i < 10000000
+  );
 
   const lookUp = positions.reduce((acc, pos) => {
     acc[`${pos.x}:${pos.y}`] = pos;
     return acc;
   }, {} as Record<string, Position>);
-  const printMap: string[] = [];
-  const isOdd = false;
-  const interior = 0;
+  let interior = 0;
+  let out = "";
+  let print = "";
   for (let y = 0; y < grid.length; y++) {
+    let isOdd = false;
+    let lastPO = null;
+    let inSegment = false;
     for (let x = 0; x < grid[0].length; x++) {
       const pos = lookUp[`${x}:${y}`];
       if (pos) {
-        row += grid[y][x];
+        const val = grid[pos.y][pos.x];
+
+        print += val;
+        if (pos.o % 2 === 0 && pos.po % 2 === 0) {
+          isOdd = !isOdd;
+          out += isOdd ? "^" : "V";
+        } else if (!inSegment) {
+          lastPO = getVerticalO(pos);
+          inSegment = true;
+          out += "?";
+        } else {
+          if (pos.o % 2 === 1 && pos.po % 2 === 1) {
+            out += "-";
+          } else {
+            const newPO = getVerticalO(pos);
+
+            if (newPO === lastPO) {
+              isOdd = !isOdd;
+              out += isOdd ? "^" : "V";
+            } else {
+              out += "U";
+            }
+            inSegment = false;
+            lastPO = null;
+          }
+        }
+      } else if (isOdd) {
+        interior++;
+        out += "O";
       } else {
-        row += "X";
+        print += " ";
+        out += ".";
       }
     }
-    printMap.push(row);
+    out += "\n";
+    print += "\n";
   }
-
-  console.log(printMap.join("\n"));
-  return 0;
+  // console.log(print);
+  // console.log(out);
+  return interior;
 }
 
 (async function main() {
   const sample = await fs
     .readFile(__dirname + "/sample.txt", "utf8")
+    .then((txt) => txt.split("\n"));
+  const sample2 = await fs
+    .readFile(__dirname + "/sample2.txt", "utf8")
     .then((txt) => txt.split("\n"));
   const input = await fs
     .readFile(__dirname + "/input.txt", "utf8")
@@ -176,7 +222,7 @@ function partTwo(rawLines: string[]) {
   const sol1 = await partOne(input);
   console.log("part 1 sol:", sol1);
 
-  const test2 = await partTwo(sample);
+  const test2 = await partTwo(sample2);
   console.log("part 2 sample", test2);
   if (test2 !== sample2Sol) {
     console.log("Failed the part 2 test");

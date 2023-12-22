@@ -21,7 +21,9 @@ const CHECKS = {
 
 function isValidGame(round: Round): boolean {
   return ["red", "blue", "green"].every((color) =>
-    round.games.every((game) => game[color] <= CHECKS[color])
+    round.games.every(
+      (game) => game[color as keyof Game] <= CHECKS[color as keyof Game]
+    )
   );
 }
 
@@ -36,7 +38,7 @@ function parse(line: string): Round {
         (acc, draw) => {
           const [quantity, color] = draw.trim().split(" ");
 
-          acc[color] = parseInt(quantity);
+          acc[color as keyof Game] = parseInt(quantity);
 
           return acc;
         },
